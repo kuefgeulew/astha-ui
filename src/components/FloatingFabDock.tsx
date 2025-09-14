@@ -1,4 +1,3 @@
-//app
 // src/components/FloatingFabDock.tsx
 import React from "react";
 import ReactDOM from "react-dom";
@@ -11,6 +10,8 @@ import {
   SplitSquareVertical,
   PieChart,
   Gift,
+  // ✅ added:
+  Calculator as CalculatorIcon,
 } from "lucide-react";
 
 type Props = { hidden?: boolean };
@@ -37,6 +38,8 @@ function DockContent({ hidden = false }: Props) {
     { id: "qr", label: "Scan & Pay", icon: QrCode, hash: "#qrpay" },
     { id: "budget", label: "Budgets", icon: PieChart, hash: "#budget" },
     { id: "split", label: "Split / Request", icon: SplitSquareVertical, hash: "#split" },
+    // ✅ new Calculator action
+    { id: "calc", label: "Calculator", icon: CalculatorIcon, hash: "#calc" },
   ] as const;
 
   // 360° fan geometry (centered)
@@ -62,13 +65,11 @@ function DockContent({ hidden = false }: Props) {
 
       {/* Centered overlay relative to phone frame */}
       <div className="absolute inset-0 z-[9999] pointer-events-none">
-        {/*  Only change: push the hub lower with a numeric translate-y */}
         <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 translate-y-[0px] pointer-events-none">
           <AnimatePresence>
             {open &&
               items.map((it, i) => {
                 const Icon = it.icon;
-                // Start at -90° (top), distribute evenly around full circle
                 const theta = (-90 + (360 / items.length) * i) * (Math.PI / 180);
                 const x = Math.cos(theta) * R;
                 const y = Math.sin(theta) * R;
@@ -109,7 +110,7 @@ function DockContent({ hidden = false }: Props) {
                       )}
                     </motion.button>
 
-                    {/* Hover label follows the same radial arc */}
+                    {/* Hover label */}
                     <motion.span
                       initial={{ opacity: 0, scale: 0.6, x: 0, y: 0 }}
                       animate={{
@@ -152,7 +153,6 @@ function DockContent({ hidden = false }: Props) {
 }
 
 export default function FloatingFabDock(props: Props) {
-  // Portal to the phone frame so the dock is fixed at its center.
   const anchor =
     (typeof document !== "undefined" && document.getElementById("fab-anchor")) ||
     document.body;

@@ -17,6 +17,9 @@ import ProfileQROverlay from "./screens/profile/ProfileQROverlay";
 // Offers (For You + Geo + Filters)
 import OffersOverlay from "./screens/offers/OffersOverlay";
 
+// ✅ NEW: Calculator overlay
+import FabSavingsCalculatorsOverlay from "./screens/calc/FabSavingsCalculatorsOverlay";
+
 /**
  * Minimal wrapper that shows:
  * 1) Splash screen
@@ -35,6 +38,8 @@ export default function App() {
   const [showBudget, setShowBudget] = React.useState(false);
   const [showProfileQR, setShowProfileQR] = React.useState(false);
   const [showOffers, setShowOffers] = React.useState(false); // 👈 NEW
+  // ✅ NEW:
+  const [showCalc, setShowCalc] = React.useState(false);
 
   React.useEffect(() => {
     const sync = () => {
@@ -46,6 +51,8 @@ export default function App() {
       setShowBudget(h === "#budget");
       setShowProfileQR(h === "#profileqr");
       setShowOffers(h === "#offers"); // 👈 NEW
+      // ✅ NEW:
+      setShowCalc(h === "#calc");
     };
     sync();
     window.addEventListener("hashchange", sync);
@@ -145,6 +152,16 @@ export default function App() {
           onClose={() => {
             clearHash();
             setShowOffers(false);
+          }}
+        />
+      )}
+
+      {/* ✅ NEW: Calculator Overlay */}
+      {showCalc && (
+        <FabSavingsCalculatorsOverlay
+          onClose={() => {
+            clearHash();
+            setShowCalc(false);
           }}
         />
       )}
