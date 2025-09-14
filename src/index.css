@@ -1,0 +1,75 @@
+/* Tailwind layers */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Defaults for theme variables (can be overridden by JS) */
+:root{
+  --bb-primary: #0B63B6;
+  --bb-card-radius: 28px;
+  --astha-actions-from: #F6C34C; /* Shortcuts card gradient start */
+  --astha-actions-to: #F1A70A;   /* Shortcuts card gradient end   */
+}
+
+/* App-wide base tweaks */
+@layer base {
+  html, body, #root {
+    height: 100%;
+  }
+  body {
+    @apply bg-neutral-100 antialiased;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+}
+
+/* Reusable glass effect */
+.glass {
+  background: rgba(255, 255, 255, 0.6);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px); /* Safari */
+}
+
+/* Optional: tidy scrollbars in overlays/panels */
+@layer utilities {
+  .scroll-smooth { scroll-behavior: smooth; }
+  .no-scrollbar::-webkit-scrollbar { display: none; }
+  .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+}
+/* add near the bottom of index.css */
+@keyframes pop {
+  0% { transform: scale(0); opacity: 0.9; }
+  80% { transform: scale(1.2); opacity: 0.2; }
+  100% { transform: scale(0); opacity: 0; }
+}
+/* Optional: smoother falling confetti for success screen */
+@keyframes confettiFall {
+  0%   { transform: translateY(-20px) rotate(0deg); opacity: 0.9; }
+  70%  { opacity: 0.9; }
+  100% { transform: translateY(110vh) rotate(360deg); opacity: 0; }
+}
+/* Accessibility: turn off big animations for users who prefer reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* Confetti helper class so Step 5 can just add 'confetti' */
+.confetti {
+  position: absolute;
+  height: 6px; width: 6px;
+  border-radius: 2px;
+  will-change: transform, opacity;
+  animation-name: confettiFall;
+  animation-timing-function: ease-in;
+  animation-fill-mode: both;
+}
+
+/* Optional: tidy dark mode form controls if you ever toggle color scheme */
+:root {
+  color-scheme: light;
+}
