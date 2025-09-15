@@ -20,6 +20,9 @@ import OffersOverlay from "./screens/offers/OffersOverlay";
 // ✅ NEW: Calculator overlay
 import FabSavingsCalculatorsOverlay from "./screens/calc/FabSavingsCalculatorsOverlay";
 
+// ✅ NEW (Step 2): Voice Assistant overlay
+import VoiceAssistantOverlay from "./screens/voice/VoiceAssistantOverlay";
+
 /**
  * Minimal wrapper that shows:
  * 1) Splash screen
@@ -40,6 +43,8 @@ export default function App() {
   const [showOffers, setShowOffers] = React.useState(false); // 👈 NEW
   // ✅ NEW:
   const [showCalc, setShowCalc] = React.useState(false);
+  // ✅ NEW (Step 2):
+  const [showVoice, setShowVoice] = React.useState(false);
 
   React.useEffect(() => {
     const sync = () => {
@@ -53,6 +58,8 @@ export default function App() {
       setShowOffers(h === "#offers"); // 👈 NEW
       // ✅ NEW:
       setShowCalc(h === "#calc");
+      // ✅ NEW (Step 2):
+      setShowVoice(h === "#voice");
     };
     sync();
     window.addEventListener("hashchange", sync);
@@ -162,6 +169,17 @@ export default function App() {
           onClose={() => {
             clearHash();
             setShowCalc(false);
+          }}
+        />
+      )}
+
+      {/* ✅ NEW (Step 2): Voice Assistant Overlay */}
+      {showVoice && (
+        <VoiceAssistantOverlay
+          defaultProvider="retell"
+          onClose={() => {
+            clearHash();
+            setShowVoice(false);
           }}
         />
       )}

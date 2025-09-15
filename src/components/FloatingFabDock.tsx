@@ -12,6 +12,8 @@ import {
   Gift,
   // ✅ added:
   Calculator as CalculatorIcon,
+  // ✅ STEP 3: voice icon
+  Mic,
 } from "lucide-react";
 
 type Props = { hidden?: boolean };
@@ -34,6 +36,8 @@ function DockContent({ hidden = false }: Props) {
   // Actions (all identical color; Split/Request is black-on-white)
   const items = [
     { id: "chat", label: "Chat", icon: MessageCircle, hash: "#chatbot" },
+    // ✅ STEP 3: Voice assistant entry
+    { id: "voice", label: "Voice", icon: Mic, hash: "#voice" },
     { id: "offers", label: "Offers", icon: Gift, hash: "#offers", badge: "For You" as const },
     { id: "qr", label: "Scan & Pay", icon: QrCode, hash: "#qrpay" },
     { id: "budget", label: "Budgets", icon: PieChart, hash: "#budget" },

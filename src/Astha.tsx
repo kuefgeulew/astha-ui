@@ -308,7 +308,7 @@ function LoginScreen({ onLogin }: { onLogin: () => void }) {
             Login to <span className="text-blue-700">BRAC Bank Astha</span>
           </div>
 
-          <label className="mb-1 block text-sm text-slate-600">Username</label>
+        <label className="mb-1 block text-sm text-slate-600">Username</label>
           <input
             value={user}
             onChange={(e) => setUser(e.target.value)}
@@ -842,6 +842,8 @@ export default function Astha() {
             "#budget",
             "#profileqr",
             "#offers",
+            "#calc",   // <-- added
+            "#voice",  // <-- added
           ].includes(h);
           return screen === "home" && !anyOverlay ? <FloatingFabDock /> : null;
         })()}
