@@ -4,6 +4,8 @@ import Astha from "./Astha";
 import ChatbotOverlay from "./screens/ChatbotOverlay";
 import QRPayOverlay from "./screens/qr/QRPayOverlay";
 import StreakOverlay from "./screens/streak/StreakOverlay";
+import SaltamamiOverlay from "./screens/summary/SaltamamiOverlay";
+
 
 // Split/Request money
 import SplitRequestOverlay from "./screens/split/SplitRequestOverlay";
@@ -41,6 +43,8 @@ export default function App() {
   const [showBudget, setShowBudget] = React.useState(false);
   const [showProfileQR, setShowProfileQR] = React.useState(false);
   const [showOffers, setShowOffers] = React.useState(false); // 👈 NEW
+  const [showSummary, setShowSummary] = React.useState(false);
+
   // ✅ NEW:
   const [showCalc, setShowCalc] = React.useState(false);
   // ✅ NEW (Step 2):
@@ -58,6 +62,8 @@ export default function App() {
       setShowOffers(h === "#offers"); // 👈 NEW
       // ✅ NEW:
       setShowCalc(h === "#calc");
+      setShowSummary(h === "#summary");
+
       // ✅ NEW (Step 2):
       setShowVoice(h === "#voice");
     };
@@ -172,6 +178,15 @@ export default function App() {
           }}
         />
       )}
+
+      {showSummary && (
+  <SaltamamiOverlay
+    onClose={() => {
+      clearHash();
+      setShowSummary(false);
+    }}
+  />
+)}
 
       {/* ✅ NEW (Step 2): Voice Assistant Overlay */}
       {showVoice && (

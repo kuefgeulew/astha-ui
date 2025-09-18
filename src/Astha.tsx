@@ -844,6 +844,7 @@ export default function Astha() {
             "#offers",
             "#calc",   // <-- added
             "#voice",  // <-- added
+            "#summary",
           ].includes(h);
           return screen === "home" && !anyOverlay ? <FloatingFabDock /> : null;
         })()}

@@ -2,6 +2,7 @@
 import React from "react";
 import ReactDOM from "react-dom";
 import { motion, AnimatePresence } from "framer-motion";
+import { BarChart2 } from "lucide-react";
 import {
   Plus,
   X,
@@ -43,6 +44,8 @@ function DockContent({ hidden = false }: Props) {
     { id: "budget", label: "Budgets", icon: PieChart, hash: "#budget" },
     { id: "split", label: "Split / Request", icon: SplitSquareVertical, hash: "#split" },
     // ✅ new Calculator action
+    { id: "summary", label: "Summary", icon: BarChart2, hash: "#summary" },
+
     { id: "calc", label: "Calculator", icon: CalculatorIcon, hash: "#calc" },
   ] as const;
 
