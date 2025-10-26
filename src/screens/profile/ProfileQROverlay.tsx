@@ -1,17 +1,18 @@
 // src/screens/profile/ProfileQROverlay.tsx
 import React, { useEffect, useMemo, useState } from "react";
-import { X, BadgeCheck, Clock } from "lucide-react";
+import { X, BadgeCheck /*, Clock*/ } from "lucide-react";
 import { QRCodeCanvas } from "qrcode.react";
 
 const USER_ID = "nazia325";
 const QR_LIFETIME_MS = 2 * 60 * 1000; // 2 minutes
 
-type Account = { id: string; name: string };
+// ✅ add account number
+type Account = { id: string; name: string; number: string };
 
 const MOCK_ACCOUNTS: Account[] = [
-  { id: "savings_staff", name: "Savings (Staff)" },
-  { id: "current_001", name: "Current Account" },
-  { id: "dps_2025", name: "DPS Plan 2025" },
+  { id: "savings_staff", name: "Savings (Staff)", number: "0123 4567 8901" },
+  { id: "current_001", name: "Current Account", number: "2011 3344 5566" },
+  { id: "micro_savings", name: "Micro Savings", number: "7788 9900 1122" },
 ];
 
 export default function ProfileQROverlay({ onClose }: { onClose: () => void }) {
@@ -23,39 +24,36 @@ export default function ProfileQROverlay({ onClose }: { onClose: () => void }) {
   const [otpInput, setOtpInput] = useState("");
   const [verified, setVerified] = useState(true); // default true for first account
 
-  // QR lifecycle
+  // QR lifecycle (kept as-is; just not shown in UI)
   const [expiryAt, setExpiryAt] = useState<number | null>(null);
   const [now, setNow] = useState<number>(Date.now());
   const [qrNonce, setQrNonce] = useState<string>(() => Math.random().toString(36).slice(2, 10));
 
-  // Kick off a QR window on first mount for the default verified account
   useEffect(() => {
     if (verified && expiryAt == null) {
       setExpiryAt(Date.now() + QR_LIFETIME_MS);
     }
   }, [verified, expiryAt]);
 
-  // Ticker for countdown
   useEffect(() => {
     const t = setInterval(() => setNow(Date.now()), 1000);
     return () => clearInterval(t);
   }, []);
 
-  // Reset verification when account changes; send OTP
   const sendOtp = () => {
     const code = Math.floor(100000 + Math.random() * 900000).toString();
     setOtpCode(code);
     setOtpSent(true);
     setOtpInput("");
     setVerified(false);
-    setExpiryAt(null); // stop showing QR until verified
-    alert("Mock OTP sent: " + code); // replace with actual SMS/Email in real app
+    setExpiryAt(null);
+    alert("Mock OTP sent: " + code);
   };
 
   const onChangeAccount = (id: string) => {
     const acct = MOCK_ACCOUNTS.find((a) => a.id === id)!;
     setLinkedAcct(acct);
-    sendOtp(); // require OTP again on account change
+    sendOtp();
   };
 
   const verifyOtp = () => {
@@ -63,7 +61,6 @@ export default function ProfileQROverlay({ onClose }: { onClose: () => void }) {
       setVerified(true);
       setOtpSent(false);
       setOtpCode("");
-      // Issue a fresh QR window and rotate nonce
       setQrNonce(Math.random().toString(36).slice(2, 10));
       setExpiryAt(Date.now() + QR_LIFETIME_MS);
       alert("OTP Verified! Linked account updated.");
@@ -72,25 +69,19 @@ export default function ProfileQROverlay({ onClose }: { onClose: () => void }) {
     }
   };
 
-  // Countdown derivations
+  // kept (not displayed)
   const msLeft = useMemo(() => {
     if (!expiryAt) return 0;
     return Math.max(0, expiryAt - now);
   }, [expiryAt, now]);
-
   const expired = verified && expiryAt !== null && msLeft <= 0;
 
-  const mm = String(Math.floor(msLeft / 1000 / 60)).padStart(2, "0");
-  const ss = String(Math.floor((msLeft / 1000) % 60)).padStart(2, "0");
-
-  // Regenerate within same account (no OTP) -> new nonce + timer
   const regenerate = () => {
     if (!verified) return;
     setQrNonce(Math.random().toString(36).slice(2, 10));
     setExpiryAt(Date.now() + QR_LIFETIME_MS);
   };
 
-  // Deep link encoded in QR
   const qrValue = `astha://link/${USER_ID}?acct=${linkedAcct.id}&t=${qrNonce}`;
 
   return (
@@ -119,29 +110,11 @@ export default function ProfileQROverlay({ onClose }: { onClose: () => void }) {
         <div className="mb-3">
           {verified ? (
             <div className="relative mx-auto w-fit rounded-lg border border-slate-200 p-3 shadow">
-              {/* QR or expired overlay */}
+              {/* QR (no timer UI) */}
               <div className={expired ? "blur-[2px] opacity-60" : ""}>
                 <QRCodeCanvas value={qrValue} size={188} includeMargin={true} />
               </div>
-
-              {/* Countdown ribbon */}
-              <div className="mt-2 flex items-center justify-center gap-2 text-xs text-slate-600">
-                <Clock className="h-4 w-4" />
-                {!expired ? (
-                  <span>QR expires in <b>{mm}:{ss}</b></span>
-                ) : (
-                  <span className="text-rose-600">QR expired</span>
-                )}
-              </div>
-
-              {/* Expired badge + regenerate button */}
-              {expired && (
-                <div className="absolute inset-0 grid place-items-center">
-                  <div className="rounded-full bg-white/95 px-3 py-1 text-xs font-semibold text-rose-600 ring-1 ring-rose-300">
-                    Expired
-                  </div>
-                </div>
-              )}
+              {/* ⛔ Timer/Countdown intentionally not shown */}
             </div>
           ) : (
             <div className="mx-auto w-fit rounded-lg border border-dashed border-slate-300 p-6 text-sm text-slate-500">
@@ -159,7 +132,8 @@ export default function ProfileQROverlay({ onClose }: { onClose: () => void }) {
         >
           {MOCK_ACCOUNTS.map((a) => (
             <option key={a.id} value={a.id}>
-              {a.name}
+              {/* ✅ show name + number */}
+              {a.name} — {a.number}
             </option>
           ))}
         </select>
@@ -208,7 +182,7 @@ export default function ProfileQROverlay({ onClose }: { onClose: () => void }) {
               className={`rounded-lg px-3 py-1 text-sm text-white ${
                 verified ? "bg-blue-600 hover:bg-blue-700" : "bg-slate-400"
               }`}
-              title={verified ? "Generate a fresh QR (2 min)" : "Verify OTP first"}
+              title={verified ? "Generate a fresh QR" : "Verify OTP first"}
             >
               Regenerate QR
             </button>

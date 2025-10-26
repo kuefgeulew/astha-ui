@@ -15,6 +15,9 @@ import {
   Calculator as CalculatorIcon,
   // ✅ STEP 3: voice icon
   Mic,
+  // ✅ added for Manager:
+  Wallet,            // <-- NEW
+  
 } from "lucide-react";
 
 type Props = { hidden?: boolean };
@@ -43,10 +46,11 @@ function DockContent({ hidden = false }: Props) {
     { id: "qr", label: "Scan & Pay", icon: QrCode, hash: "#qrpay" },
     { id: "budget", label: "Budgets", icon: PieChart, hash: "#budget" },
     { id: "split", label: "Split / Request", icon: SplitSquareVertical, hash: "#split" },
-    // ✅ new Calculator action
     { id: "summary", label: "Summary", icon: BarChart2, hash: "#summary" },
-
     { id: "calc", label: "Calculator", icon: CalculatorIcon, hash: "#calc" },
+    
+    // ✅ NEW action: Manager (hooks your Debts/Bills feature via hash)
+    { id: "manager", label: "Manager", icon: Wallet, hash: "#manager" },
   ] as const;
 
   // 360° fan geometry (centered)

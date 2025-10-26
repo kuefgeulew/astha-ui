@@ -36,18 +36,21 @@
   .no-scrollbar::-webkit-scrollbar { display: none; }
   .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
 }
-/* add near the bottom of index.css */
+
+/* receipt sprinkles animation (used elsewhere) */
 @keyframes pop {
   0% { transform: scale(0); opacity: 0.9; }
   80% { transform: scale(1.2); opacity: 0.2; }
   100% { transform: scale(0); opacity: 0; }
 }
+
 /* Optional: smoother falling confetti for success screen */
 @keyframes confettiFall {
   0%   { transform: translateY(-20px) rotate(0deg); opacity: 0.9; }
   70%  { opacity: 0.9; }
   100% { transform: translateY(110vh) rotate(360deg); opacity: 0; }
 }
+
 /* Accessibility: turn off big animations for users who prefer reduced motion */
 @media (prefers-reduced-motion: reduce) {
   * {
@@ -72,4 +75,100 @@
 /* Optional: tidy dark mode form controls if you ever toggle color scheme */
 :root {
   color-scheme: light;
+}
+
+/* ────────────────────────────────────────────────────────────── */
+/*    Receipt Summary (PaymentSummaryModal) helper classes        */
+/* ────────────────────────────────────────────────────────────── */
+
+/* Single row for each payer */
+.receipt-row {
+  display: grid;
+  grid-template-columns: minmax(140px, 1.2fr) 0.9fr 0.9fr minmax(120px, 0.9fr);
+  align-items: center;
+  gap: 12px;
+  padding: 10px 12px;
+  border-radius: 12px;
+}
+
+/* Positive / received badge */
+.received {
+  background: rgba(16, 185, 129, 0.12);        /* emerald-500 @ ~12% */
+  color: rgb(5, 122, 85);                       /* emerald-700 */
+  border: 1px solid rgba(16, 185, 129, 0.25);   /* emerald outline */
+  border-radius: 9999px;
+  padding: 4px 10px;
+  font-weight: 600;
+  font-size: 12px;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+/* Pending badge */
+.pending {
+  background: rgba(251, 191, 36, 0.14);         /* amber-400 @ ~14% */
+  color: rgb(146, 64, 14);                      /* amber-800 */
+  border: 1px solid rgba(251, 191, 36, 0.28);   /* amber outline */
+  border-radius: 9999px;
+  padding: 4px 10px;
+  font-weight: 600;
+  font-size: 12px;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+/* Dashed separators between logical blocks */
+.divider-dashed {
+  border-top: 1px dashed #cbd5e1; /* slate-300 */
+  margin: 12px 0;
+}
+
+/* Subtle zebra & hover effects */
+.receipt-row:nth-child(odd) {
+  background: rgba(241, 245, 249, 0.45); /* slate-100 soft */
+}
+.receipt-row:hover {
+  background: rgba(59, 130, 246, 0.08); /* blue-500 @ 8% */
+}
+
+/* Avatar bubble */
+.receipt-avatar {
+  height: 36px;
+  width: 36px;
+  border-radius: 9999px;
+  display: grid;
+  place-items: center;
+  background: #f1f5f9; /* slate-100 */
+  font-size: 18px;
+}
+
+/* Money columns alignment */
+.receipt-money {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+  font-feature-settings: "tnum";
+  font-weight: 700;
+}
+
+/* Header labels */
+.receipt-head {
+  color: #475569; /* slate-600 */
+  font-size: 12px;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+  font-weight: 700;
+}
+
+/* Totals box */
+.receipt-totals {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 10px;
+  align-items: center;
+  background: white;
+  border: 1px solid #e2e8f0; /* slate-200 */
+  border-radius: 16px;
+  padding: 12px 14px;
 }

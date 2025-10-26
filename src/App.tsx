@@ -6,7 +6,6 @@ import QRPayOverlay from "./screens/qr/QRPayOverlay";
 import StreakOverlay from "./screens/streak/StreakOverlay";
 import SaltamamiOverlay from "./screens/summary/SaltamamiOverlay";
 
-
 // Split/Request money
 import SplitRequestOverlay from "./screens/split/SplitRequestOverlay";
 
@@ -24,6 +23,12 @@ import FabSavingsCalculatorsOverlay from "./screens/calc/FabSavingsCalculatorsOv
 
 // ✅ NEW (Step 2): Voice Assistant overlay
 import VoiceAssistantOverlay from "./screens/voice/VoiceAssistantOverlay";
+
+// ✅ NEW (Manager): Debt & Bills Manager + E-Mandate
+import DebtBillsOverlay from "./screens/finance/DebtBillsOverlay";
+
+// ✅ NEW (Wealth Hub)
+import WealthHubOverlay from "./screens/wealth/WealthHubOverlay";
 
 /**
  * Minimal wrapper that shows:
@@ -49,6 +54,10 @@ export default function App() {
   const [showCalc, setShowCalc] = React.useState(false);
   // ✅ NEW (Step 2):
   const [showVoice, setShowVoice] = React.useState(false);
+  // ✅ NEW (Manager):
+  const [showManager, setShowManager] = React.useState(false);
+  // ✅ NEW (Wealth Hub):
+  const [showWealth, setShowWealth] = React.useState(false);
 
   React.useEffect(() => {
     const sync = () => {
@@ -66,6 +75,12 @@ export default function App() {
 
       // ✅ NEW (Step 2):
       setShowVoice(h === "#voice");
+
+      // ✅ NEW (Manager):
+      setShowManager(h === "#manager");
+
+      // ✅ NEW (Wealth Hub):
+      setShowWealth(h === "#wealth");
     };
     sync();
     window.addEventListener("hashchange", sync);
@@ -180,13 +195,13 @@ export default function App() {
       )}
 
       {showSummary && (
-  <SaltamamiOverlay
-    onClose={() => {
-      clearHash();
-      setShowSummary(false);
-    }}
-  />
-)}
+        <SaltamamiOverlay
+          onClose={() => {
+            clearHash();
+            setShowSummary(false);
+          }}
+        />
+      )}
 
       {/* ✅ NEW (Step 2): Voice Assistant Overlay */}
       {showVoice && (
@@ -195,6 +210,26 @@ export default function App() {
           onClose={() => {
             clearHash();
             setShowVoice(false);
+          }}
+        />
+      )}
+
+      {/* ✅ NEW (Manager): Debt & Bills + E-Mandate */}
+      {showManager && (
+        <DebtBillsOverlay
+          onClose={() => {
+            clearHash();
+            setShowManager(false);
+          }}
+        />
+      )}
+
+      {/* ✅ NEW (Wealth Hub) */}
+      {showWealth && (
+        <WealthHubOverlay
+          onClose={() => {
+            clearHash();
+            setShowWealth(false);
           }}
         />
       )}
@@ -285,7 +320,7 @@ function LoginScreen({ onSuccess }: { onSuccess: () => void }) {
               value={u}
               onChange={(e) => setU(e.target.value)}
               placeholder="Enter Username"
-              className="w-full rounded-xl border border-slate-200 px-3 py-2 outline-none focus:ring-2 focus:ring-blue-200"
+              className="w/full rounded-xl border border-slate-200 px-3 py-2 outline-none focus:ring-2 focus:ring-blue-200"
             />
             <a
               className="ml-3 whitespace-nowrap text-sm text-blue-600"
@@ -303,7 +338,7 @@ function LoginScreen({ onSuccess }: { onSuccess: () => void }) {
               onChange={(e) => setP(e.target.value)}
               placeholder="Enter Password"
               type="password"
-              className="w-full rounded-xl border border-slate-200 px-3 py-2 outline-none focus:ring-2 focus:ring-blue-200"
+              className="w/full rounded-xl border border-slate-200 px-3 py-2 outline-none focus:ring-2 focus:ring-blue-200"
             />
             <a
               className="ml-3 whitespace-nowrap text-sm text-blue-600"

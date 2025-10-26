@@ -1,117 +1,203 @@
 // src/screens/split/groups.ts
+// Minimal shared data/helpers for Split & Request flows
 
-/** Person directory used across the Split/Request flow */
 export type Person = {
   id: string;
   name: string;
-  avatar?: string;   // emoji or small glyph
-  mask: string;      // masked account string e.g. "A/C •••• 0003"
-  isYou?: boolean;   // signed-in user
+  mask: string;     // masked account / phone text shown under the name
+  avatar?: string;  // simple emoji/initial for now
 };
 
-export const PEOPLE: Person[] = [
-  { id: "me",      name: "Nazia Haque",   avatar: "👩🏻‍💼", mask: "A/C •••• 0003", isYou: true },
-  { id: "ayesha",  name: "Ayesha Rahman", avatar: "🧕",     mask: "A/C •••• 0001" },
-  { id: "siam",    name: "Siam Chowdhury",avatar: "🧑🏻",    mask: "A/C •••• 0002" },
-  { id: "mahbub",  name: "Mahmud Karim",  avatar: "🧔🏻",    mask: "A/C •••• 0004" },
-  { id: "jannat",  name: "Jannat Akter",  avatar: "👩🏻",    mask: "A/C •••• 0005" },
-  { id: "arif",    name: "Arif Islam",    avatar: "👨🏻",    mask: "A/C •••• 0006" },
-];
-
-export function getPerson(id: string): Person | undefined {
-  return PEOPLE.find(p => p.id === id);
-}
-
-/** Saved reusable group */
 export type Group = {
   id: string;
-  name: string;            // "Office Lunch Squad"
-  emoji?: string;          // e.g. "🍔"
-  memberIds: string[];     // references PEOPLE ids (must include "me" for user's groups)
+  name: string;
+  emoji: string;
+  memberIds: string[];
   createdAt: number;
 };
 
-/* --------------------------- LocalStorage keys --------------------------- */
-const LS_GROUPS = "astha_split_groups_v1";
-const LS_POINTS = "astha_split_points_v1";
-const LS_BADGES = "astha_split_badges_v1";
+/* ------------------------------------------------------------------ */
+/*  People (from your screenshots)                                    */
+/* ------------------------------------------------------------------ */
 
-/* ------------------------------- Groups API ------------------------------ */
+export const PEOPLE: Person[] = [
+  // Screenshot 1
+  { id: "abdur-rahman",          name: "Abdur Rahman",            mask: "•••0582", avatar: "🌙" },
+  { id: "anjumee-troyee",        name: "Anjumee Troyee",          mask: "•••4921", avatar: "🧕" },
+  { id: "ashraful-munir-shakil", name: "Ashraful Munir Shakil",   mask: "•••7740", avatar: "🧔🏻" },
+  { id: "iffat-sanjida-dola",    name: "Iffat Sanjida Dola",      mask: "•••3316", avatar: "👩🏻" },
+  { id: "jannat-shaky",          name: "Jannat Shaky",            mask: "•••9284", avatar: "👩🏽" },
+  { id: "kazi-zinia",            name: "Kazi Zinia",              mask: "•••6402", avatar: "👩🏽‍🎨" },
+  { id: "maliha-mahfuz",         name: "Maliha Mahfuz",           mask: "•••1180", avatar: "👩🏼" },
+  { id: "maliha-nusrat-arpa",    name: "Maliha Nusrat Arpa",      mask: "•••4477", avatar: "👩🏻‍💼" },
+  { id: "morium-mannan-tonni",   name: "Morium Mannan Tonni",     mask: "•••9008", avatar: "👤" },
+  { id: "mortoza-morshed",       name: "Mortoza Morshed",         mask: "•••2673", avatar: "🏔️" },
+  { id: "nabil-hassan",          name: "Nabil Hassan",            mask: "•••7304", avatar: "🧑🏽" },
+  { id: "nazia-haque",           name: "Nazia Haque",             mask: "•••5529", avatar: "🧕🏼" },
+  { id: "nazmul-hasan-shihab",   name: "Nazmul Hasan Shihab",     mask: "•••8892", avatar: "🧑🏻‍💼" },
+  { id: "nibula-rashid",         name: "Nibula Rashid",           mask: "•••3351", avatar: "🧕🏽" },
+  { id: "nupur-sarker",          name: "Nupur Sarker",            mask: "•••6407", avatar: "🌆" },
+
+  // Screenshot 2
+  { id: "rifat-jahan-biva",      name: "Rifat Jahan Biva",        mask: "•••4142", avatar: "🌸" },
+  { id: "sadia-islam-ananya",    name: "Sadia Islam Ananya",      mask: "•••7059", avatar: "🏞️" },
+  { id: "sakib-alam",            name: "Sakib Alam",              mask: "•••2214", avatar: "👔" },
+  { id: "samen-yasar",           name: "Samen Yasar",             mask: "•••6071", avatar: "🧑🏽‍💻" },
+  { id: "sanjana-soheli-ahmed",  name: "Sanjana Soheli Ahmed",    mask: "•••7730", avatar: "🎀" },
+  { id: "sumaiya-aditi",         name: "Sumaiya Aditi",           mask: "•••5428", avatar: "🧕🏾" },
+  { id: "tanvir-islam",          name: "Tanvir Islam",            mask: "•••9022", avatar: "🧑🏽" },
+  { id: "tawsif-zaman",          name: "Tawsif Zaman",            mask: "•••6608", avatar: "👓" },
+  { id: "utsha-barua",           name: "Utsha Barua",             mask: "•••2884", avatar: "😎" },
+
+  // Me (keep for self-splits)
+  { id: "me",                    name: "You",                     mask: "Primary ••1234", avatar: "🫶" },
+];
+
+/* ------------------------------------------------------------------ */
+/*  Helpers                                                           */
+/* ------------------------------------------------------------------ */
+
+export function getPerson(id: string) {
+  return PEOPLE.find((p) => p.id === id);
+}
+
+const LS_GROUPS = "astha_groups";
+const LS_POINTS = "astha_points";
+const LS_BADGES = "astha_badges";
+
+/**
+ * Seed a few default groups if none exist in localStorage.
+ * Includes the requested “JAIBB Books Order” (from screenshot 3).
+ */
+function seedGroups(): Group[] {
+  // member pick helper by id
+  const pick = (...ids: string[]) => ids;
+
+  const g: Group[] = [
+    {
+      id: "g-jaibb-books",
+      name: "JAIBB Books Order",
+      emoji: "📚",
+      // From 3rd screenshot selection
+      memberIds: pick(
+        "iffat-sanjida-dola",
+        "maliha-mahfuz",
+        "mortoza-morshed",
+        "nazia-haque",
+        "sadia-islam-ananya",
+        "sakib-alam",
+        "sanjana-soheli-ahmed",
+        "sumaiya-aditi",
+        "tanvir-islam"
+      ),
+      createdAt: Date.now() - 1000 * 60 * 60 * 24 * 6,
+    },
+    {
+      id: "g-weekend-travel",
+      name: "Weekend Travel Gang",
+      emoji: "🧳",
+      memberIds: pick(
+        "abdur-rahman",
+        "ashraful-munir-shakil",
+        "nabil-hassan",
+        "nazmul-hasan-shihab",
+        "utsha-barua",
+        "me"
+      ),
+      createdAt: Date.now() - 1000 * 60 * 60 * 24 * 12,
+    },
+    {
+      id: "g-office-lunch",
+      name: "Office Lunch",
+      emoji: "🍱",
+      memberIds: pick(
+        "kazi-zinia",
+        "maliha-nusrat-arpa",
+        "morium-mannan-tonni",
+        "nibula-rashid",
+        "nupur-sarker",
+        "me"
+      ),
+      createdAt: Date.now() - 1000 * 60 * 60 * 24 * 18,
+    },
+    {
+      id: "g-batch-friends",
+      name: "Batch ’18 Friends",
+      emoji: "🎓",
+      memberIds: pick(
+        "anjumee-troyee",
+        "jannat-shaky",
+        "rifat-jahan-biva",
+        "samen-yasar",
+        "tawsif-zaman",
+        "me"
+      ),
+      createdAt: Date.now() - 1000 * 60 * 60 * 24 * 25,
+    },
+  ];
+
+  // persist once
+  localStorage.setItem(LS_GROUPS, JSON.stringify(g));
+  return g;
+}
 
 export function loadGroups(): Group[] {
   try {
     const raw = localStorage.getItem(LS_GROUPS);
-    if (raw) {
-      const parsed = JSON.parse(raw) as Group[];
-      if (Array.isArray(parsed)) return parsed;
-    }
-  } catch {}
-
-  // seed a couple so the UI isn't empty
-  const seed: Group[] = [
-    {
-      id: "grp1",
-      name: "Office Lunch Squad",
-      emoji: "🍱",
-      memberIds: ["me", "ayesha", "siam"],
-      createdAt: Date.now(),
-    },
-    {
-      id: "grp2",
-      name: "Weekend Travel Gang",
-      emoji: "🧳",
-      memberIds: ["me", "mahbub", "jannat", "arif"],
-      createdAt: Date.now(),
-    },
-  ];
-  saveGroups(seed);
-  return seed;
+    if (!raw) return seedGroups();
+    const parsed: Group[] = JSON.parse(raw);
+    if (!Array.isArray(parsed) || parsed.length === 0) return seedGroups();
+    return parsed;
+  } catch {
+    return seedGroups();
+  }
 }
 
 export function saveGroups(groups: Group[]) {
-  try {
-    localStorage.setItem(LS_GROUPS, JSON.stringify(groups));
-  } catch {}
+  localStorage.setItem(LS_GROUPS, JSON.stringify(groups));
 }
 
-/** Optional helper if you need to insert/update a group by id */
-export function upsertGroup(group: Group) {
-  const all = loadGroups();
-  const i = all.findIndex(g => g.id === group.id);
-  if (i >= 0) all[i] = group; else all.unshift(group);
-  saveGroups(all);
-}
-
-/* --------------------------- Points & Badges API ------------------------- */
+/* ------------------------------------------------------------------ */
+/*  Gamification counters (kept compatible with your existing calls)  */
+/* ------------------------------------------------------------------ */
 
 export function getPoints(): number {
   const n = Number(localStorage.getItem(LS_POINTS) || "0");
-  return Number.isFinite(n) ? n : 0;
+  return isNaN(n) ? 0 : n;
 }
 
-export function addPoints(delta: number): number {
-  const next = Math.max(0, getPoints() + (Number.isFinite(delta) ? delta : 0));
-  localStorage.setItem(LS_POINTS, String(next));
-  return next;
+export function setPoints(v: number) {
+  localStorage.setItem(LS_POINTS, String(v));
+}
+
+export function addPoints(delta: number) {
+  setPoints(getPoints() + delta);
 }
 
 export function getBadges(): string[] {
   try {
     const raw = localStorage.getItem(LS_BADGES);
-    const arr = raw ? (JSON.parse(raw) as string[]) : [];
-    return Array.isArray(arr) ? arr : [];
+    const list = raw ? (JSON.parse(raw) as string[]) : [];
+    return Array.isArray(list) ? list : [];
   } catch {
     return [];
   }
 }
 
-export function addBadge(id: string) {
-  const set = new Set(getBadges());
-  if (!id) return;
-  set.add(id);
-  localStorage.setItem(LS_BADGES, JSON.stringify([...set]));
+export function setBadges(list: string[]) {
+  localStorage.setItem(LS_BADGES, JSON.stringify(list));
 }
 
-/* Aliases for compatibility with other modules */
-export const awardBadge = addBadge;
-export const unlockBadge = addBadge;
+/* ------------------------------------------------------------------ */
+/*  🔧 Minimal badge helper exports for rewards.ts compatibility      */
+/* ------------------------------------------------------------------ */
+
+export function unlockBadge(id: string) {
+  if (!id) return;
+  const set = new Set(getBadges());
+  set.add(id);
+  setBadges([...set]);
+}
+
+// Optional alias if any place uses awardBadge
+export const awardBadge = unlockBadge;
